@@ -4,6 +4,7 @@ Analyzes current architecture for technical debt, scalability issues, and design
 """
 
 import json
+import os
 from typing import Dict, Any, Optional
 
 import google.generativeai as genai
@@ -48,10 +49,9 @@ class ArchitectureAssessmentAgent:
 
     def __init__(self):
         """Initialize the agent with Gemini model and architecture assessment instructions."""
-        # Import Agent, Gemini, settings
         settings = getattr(config, 'settings', config)
-        api_key = getattr(settings, 'GEMINI_API_KEY', config.GEMINI_API_KEY)
-        model_name = getattr(settings, 'GEMINI_MODEL', config.GEMINI_MODEL)
+        api_key = getattr(settings, 'GEMINI_API_KEY', None) or getattr(config, 'GEMINI_API_KEY', None) or os.getenv('GEMINI_API_KEY', '')
+        model_name = getattr(settings, 'GEMINI_MODEL', None) or getattr(config, 'GEMINI_MODEL', None) or os.getenv('GEMINI_MODEL', 'gemini-2.0-flash-exp')
 
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel(

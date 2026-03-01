@@ -7,7 +7,7 @@ import os
 from typing import List
 
 # API Configuration
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "your_api_key_here")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyAhpuwewv0CXeIkwW41RMz0T4Lpygu2o7c")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash-exp")
 
 # Database Configuration

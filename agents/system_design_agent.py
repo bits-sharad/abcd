@@ -4,6 +4,7 @@ Creates complete system architecture blueprints and designs.
 """
 
 import json
+import os
 from typing import Dict, Any
 import google.generativeai as genai
 
@@ -18,8 +19,10 @@ class SystemDesignAgent:
     
     def __init__(self):
         """Initialize the agent with Gemini API."""
-        genai.configure(api_key=config.GEMINI_API_KEY)
-        self.model = genai.GenerativeModel(config.GEMINI_MODEL)
+        api_key = getattr(config, 'GEMINI_API_KEY', None) or os.getenv('GEMINI_API_KEY', '')
+        model_name = getattr(config, 'GEMINI_MODEL', None) or os.getenv('GEMINI_MODEL', 'gemini-2.0-flash-exp')
+        genai.configure(api_key=api_key)
+        self.model = genai.GenerativeModel(model_name)
         logger.info("SystemDesignAgent initialized")
     
     def run(self, design_requirements: Dict[str, Any]):
