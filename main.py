@@ -66,10 +66,10 @@ class Database:
                 approver text,
                 created_at timestamp default current_timestamp
             )
-        
         """)
+        cursor.execute("DROP TABLE IF EXISTS feedback")
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS feedback (
+            CREATE TABLE feedback (
                 id integer primary key autoincrement,
                 project_id text not null,
                 feedback_type text not null,

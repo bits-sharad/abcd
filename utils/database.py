@@ -36,8 +36,10 @@ class Database:
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
+        # Drop and recreate feedback to fix schema mismatch (old schema had content/rating, not feedback_data)
+        cursor.execute("DROP TABLE IF EXISTS feedback")
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS feedback (
+            CREATE TABLE feedback (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 project_id TEXT NOT NULL,
                 feedback_type TEXT NOT NULL,
@@ -282,16 +284,15 @@ def initialize_architecture_database() -> bool:
        """)
 
 
-       # Feedback table
+       # Feedback table - schema must match FeedbackHandler (feedback_data column)
+       cursor.execute("DROP TABLE IF EXISTS feedback")
        cursor.execute("""
-           CREATE TABLE IF NOT EXISTS feedback (
+           CREATE TABLE feedback (
                id INTEGER PRIMARY KEY AUTOINCREMENT,
-               project_id INTEGER,
-               feedback_type TEXT,
-               content TEXT,
-               rating INTEGER,
-               submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-               FOREIGN KEY (project_id) REFERENCES projects(id)
+               project_id TEXT NOT NULL,
+               feedback_type TEXT NOT NULL,
+               feedback_data TEXT NOT NULL,
+               created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
            )
        """)
 
