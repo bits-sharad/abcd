@@ -9,8 +9,12 @@ from .tech_stack_strategy_agent import TechStackStrategyAgent
 from .system_design_agent import SystemDesignAgent
 from .security_compliance_agent import SecurityComplianceAgent
 
+# Alias for tests compatibility
+ArchitectureOrchestrator = Orchestrator
+
 __all__ = [
     'Orchestrator',
+    'ArchitectureOrchestrator',
     'ArchitectureAssessmentAgent',
     'TechStackStrategyAgent',
     'SystemDesignAgent',

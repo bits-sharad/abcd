@@ -22,6 +22,11 @@ class TechStackStrategyAgent:
         self.model = genai.GenerativeModel(config.GEMINI_MODEL)
         logger.info("TechStackStrategyAgent initialized")
     
+    def run(self, requirements: Dict[str, Any]):
+        """Run recommendation (for test mocking). Returns object with .content attribute."""
+        result = self.recommend(requirements)
+        return type('Response', (), {'content': json.dumps(result)})()
+
     def recommend(self, requirements: Dict[str, Any]) -> Dict[str, Any]:
         """
         Generate technology stack recommendations.

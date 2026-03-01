@@ -60,6 +60,11 @@ class ArchitectureAssessmentAgent:
         )
         logger.info("ArchitectureAssessmentAgent initialized")
     
+    def run(self, project_data: Dict[str, Any]):
+        """Run assessment (for test mocking). Returns object with .content attribute."""
+        result = self.assess(project_data)
+        return type('Response', (), {'content': json.dumps(result)})()
+
     def assess(self, project_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Perform comprehensive architecture assessment.

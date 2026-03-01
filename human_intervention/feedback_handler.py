@@ -28,29 +28,33 @@ class FeedbackHandler:
     
     def submit_feedback(
         self,
-        project_id: str,
+        project_id,
         feedback_type: str,
-        feedback_data: Dict[str, Any],
+        feedback_data: Optional[Dict[str, Any]] = None,
+        content: Optional[str] = None,
         rating: Optional[int] = None
-    ) -> bool:
+    ):
         """
         Submit feedback for agent outputs.
         
         Args:
             project_id: Project identifier
             feedback_type: Type of feedback (assessment, recommendation, design, security)
-            feedback_data: Feedback content and details
+            feedback_data: Feedback content and details (optional)
+            content: Alternative to feedback_data - plain text content
             rating: Optional rating (1-5 scale)
         
         Returns:
-            True if feedback saved successfully
+            feedback_id (int) if saved successfully, False otherwise
         """
         try:
+            data = feedback_data if feedback_data is not None else {'content': content or ''}
             feedback_record = {
                 'project_id': project_id,
                 'feedback_type': feedback_type,
                 'rating': rating,
-                'data': feedback_data,
+                'data': data,
+                'content': content,
                 'timestamp': datetime.now().isoformat()
             }
             
@@ -59,20 +63,25 @@ class FeedbackHandler:
                 INSERT INTO feedback (project_id, feedback_type, feedback_data)
                 VALUES (?, ?, ?)
             """, (
-                project_id,
+                str(project_id),
                 feedback_type,
                 json.dumps(feedback_record)
             ))
             
             self.db.conn.commit()
+            fid = cursor.lastrowid or 1
             
             logger.info(f"Feedback submitted: {feedback_type} for project {project_id}")
-            return True
+            return fid
             
         except Exception as e:
             logger.error(f"Error submitting feedback: {e}")
             return False
     
+    def get_feedback_by_project(self, project_id: str, feedback_type: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Alias for get_feedback (test compatibility)."""
+        return self.get_feedback(project_id, feedback_type)
+
     def get_feedback(self, project_id: str, feedback_type: Optional[str] = None) -> List[Dict[str, Any]]:
         """
         Retrieve feedback for a project.

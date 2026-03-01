@@ -22,6 +22,11 @@ class SystemDesignAgent:
         self.model = genai.GenerativeModel(config.GEMINI_MODEL)
         logger.info("SystemDesignAgent initialized")
     
+    def run(self, design_requirements: Dict[str, Any]):
+        """Run design (for test mocking). Returns object with .content attribute."""
+        result = self.design(design_requirements)
+        return type('Response', (), {'content': json.dumps(result)})()
+
     def design(self, design_requirements: Dict[str, Any]) -> Dict[str, Any]:
         """
         Generate complete system design architecture.
@@ -142,9 +147,9 @@ Please provide a comprehensive system design covering:
 
 Format your response as structured JSON with:
 - architecture: Text description of overall architecture
-- components: Array of component objects with {name, responsibility, interfaces, dependencies}
-- apis: Array of API endpoint objects with {method, path, description, request, response}
-- databases: Array of database objects with {type, schema, replication_strategy}
+- components: Array of component objects with {{name, responsibility, interfaces, dependencies}}
+- apis: Array of API endpoint objects with {{method, path, description, request, response}}
+- databases: Array of database objects with {{type, schema, replication_strategy}}
 - caching_strategy: Object describing caching approach
 - deployment: Object describing deployment architecture
 - confidence_score: Float between 0.0 and 1.0

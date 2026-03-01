@@ -22,6 +22,11 @@ class SecurityComplianceAgent:
         self.model = genai.GenerativeModel(config.GEMINI_MODEL)
         logger.info("SecurityComplianceAgent initialized")
     
+    def run(self, security_requirements: Dict[str, Any]):
+        """Run assessment (for test mocking). Returns object with .content attribute."""
+        result = self.assess(security_requirements)
+        return type('Response', (), {'content': json.dumps(result)})()
+
     def assess(self, security_requirements: Dict[str, Any]) -> Dict[str, Any]:
         """
         Perform security and compliance assessment.

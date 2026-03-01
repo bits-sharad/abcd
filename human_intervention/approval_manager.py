@@ -25,6 +25,31 @@ class ApprovalManager:
         """
         self.db = db or Database()
         logger.info("ApprovalManager initialized")
+
+    def submit_for_approval(
+        self,
+        project_id,
+        request_type: str,
+        recommendation_summary: str,
+        full_recommendation: str,
+        priority: str = "medium"
+    ) -> int:
+        """Submit approval request. Returns approval ID."""
+        try:
+            cursor = self.db.conn.cursor()
+            cursor.execute("""
+                INSERT INTO approvals (project_id, approval_type, status, comments)
+                VALUES (?, ?, 'pending', ?)
+            """, (str(project_id), request_type, json.dumps({
+                'recommendation_summary': recommendation_summary,
+                'full_recommendation': full_recommendation,
+                'priority': priority
+            })))
+            self.db.conn.commit()
+            return cursor.lastrowid or 1
+        except Exception as e:
+            logger.error(f"Error submitting approval: {e}")
+            return 0
     
     def request_approval(
         self,

@@ -6,18 +6,57 @@ Uses SQLite for storing project data, architecture assessments, and recommendati
 
 import sqlite3
 from typing import List, Dict, Any, Optional
-from config import settings
-from .logger import setup_logger
 
+import config
+from .logger import setup_logger
 
 logger = setup_logger(__name__)
 
 
+class Database:
+    """Database manager providing .conn for ApprovalManager and FeedbackHandler."""
+
+    def __init__(self):
+        self.conn = get_connection()
+        self.conn.row_factory = sqlite3.Row
+        self._ensure_hitl_tables()
+        initialize_architecture_database()
+
+    def _ensure_hitl_tables(self):
+        """Ensure approvals and feedback tables match ApprovalManager/FeedbackHandler schema."""
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS approvals (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                project_id TEXT NOT NULL,
+                approval_type TEXT NOT NULL,
+                status TEXT NOT NULL,
+                comments TEXT,
+                approver TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS feedback (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                project_id TEXT NOT NULL,
+                feedback_type TEXT NOT NULL,
+                feedback_data TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        self.conn.commit()
+
+    def close(self):
+        """Close database connection."""
+        if self.conn:
+            self.conn.close()
+            self.conn = None
 
 
 def get_connection():
-   """Get database connection."""
-   return sqlite3.connect(settings.DB_FILE)
+    """Get database connection."""
+    return sqlite3.connect(config.DB_FILE)
 
 
 
